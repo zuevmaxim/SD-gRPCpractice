@@ -7,3 +7,7 @@ message Parcel {
     required int64 time = 3;
     required string text = 4;
 }
+
+service Messenger {
+    rpc Chat(stream Parcel) returns (stream Parcel) {}
+}
