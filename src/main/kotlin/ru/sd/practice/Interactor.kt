@@ -1,8 +1,6 @@
 package ru.sd.practice
 
 interface Interactor {
-
-    fun getMessage() : String
-
-    fun addMessage(message: String)
+    fun addMessage(message: Main.Parcel)
+    fun addConsumer(consume: (Main.Parcel) -> Unit)
 }
