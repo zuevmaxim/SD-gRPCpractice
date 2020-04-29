@@ -111,12 +111,12 @@ class MessengerUI : Application() {
 
     private fun startServer(name: String, port: Int) {
         val ui = UIInteractor(name, pane)
-        MessengerServer(port, ui).start()
+        //TODO MessengerServer(port, ui).start()
     }
 
     private fun startClient(name: String, port: Int, host: String) {
         val ui = UIInteractor(name, pane)
-        MessengerClient(host, port, ui).start()
+        // TODO MessengerClient(host, port, ui).start()
     }
 
     companion object {

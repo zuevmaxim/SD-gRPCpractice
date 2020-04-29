@@ -1,6 +1,5 @@
 package ru.sd.practice
 
-import Main
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.scene.control.Button
@@ -13,7 +12,7 @@ import java.util.*
 
 
 class UIInteractor(username: String, private val layout: FlowPane) : Interactor {
-    private val user = Main.User.newBuilder().setName(username).build()
+    private val user = User(username)
     private val messageField = TextField()
     private val sendButton = Button("Send").apply {
         setOnAction {
@@ -27,7 +26,7 @@ class UIInteractor(username: String, private val layout: FlowPane) : Interactor 
         layout.children.add(hBox)
     }
 
-    override fun addMessage(message: Main.Parcel) {
+    override fun addMessage(message: Parcel) {
         Platform.runLater {
             val timeLabel = Label(timeLongToString(message.time)).apply {
                 padding = Insets(5.0, 5.0, 5.0, 5.0)
@@ -43,18 +42,14 @@ class UIInteractor(username: String, private val layout: FlowPane) : Interactor 
         }
     }
 
-    private val consumers = mutableListOf<(Main.Parcel) -> Unit>()
+    private val consumers = mutableListOf<(Parcel) -> Unit>()
 
-    override fun addConsumer(consume: (Main.Parcel) -> Unit) {
+    override fun addConsumer(consume: (Parcel) -> Unit) {
         consumers.add(consume)
     }
 
     private fun newMessage(text: String) {
-        val parcel = Main.Parcel.newBuilder()
-            .setText(text)
-            .setUser(user)
-            .setTime(System.currentTimeMillis())
-            .build()
+        val parcel = Parcel(System.currentTimeMillis(), user, text)
         addMessage(parcel)
         for (consumer in consumers) {
             consumer(parcel)
