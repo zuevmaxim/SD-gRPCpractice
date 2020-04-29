@@ -50,7 +50,6 @@ class UIInteractor(username: String, private val layout: FlowPane) : Interactor 
 
     private fun newMessage(text: String) {
         val parcel = Parcel(System.currentTimeMillis(), user, text)
-        addMessage(parcel)
         for (consumer in consumers) {
             consumer(parcel)
         }
