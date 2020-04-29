@@ -6,11 +6,13 @@ data class User(val name: String)
 
 data class Parcel(val time: Long, val user: User, val text: String) {
     fun toBytes(): ByteArray {
-        return ByteBuffer.allocate(8 + 4 + user.name.length + text.length)
+        val userBytes = user.name.toByteArray()
+        val textBytes = text.toByteArray()
+        return ByteBuffer.allocate(8 + 4 + userBytes.size + textBytes.size)
             .putLong(time)
             .putInt(user.name.length)
-            .put(user.name.toByteArray())
-            .put(text.toByteArray())
+            .put(userBytes)
+            .put(textBytes)
             .array()
     }
 
