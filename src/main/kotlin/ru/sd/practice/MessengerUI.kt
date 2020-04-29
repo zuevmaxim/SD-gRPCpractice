@@ -28,11 +28,6 @@ class MessengerUI : Application() {
     }
 
     fun start() {
-        var tabPane = TabPane().apply {
-            padding = Insets(15.0, 15.0, 15.0, 15.0)
-        }
-        pane.children.add(tabPane)
-
         val layout = FlowPane().apply {
             orientation = Orientation.VERTICAL
             vgap = 8.0
@@ -68,6 +63,10 @@ class MessengerUI : Application() {
             }
         }
 
+        val tabPane = TabPane().apply {
+            padding = Insets(15.0, 15.0, 15.0, 15.0)
+        }
+
         val newChanelField = TextField()
         val addChanelButton = Button("Add").apply {
             setOnAction {
@@ -76,6 +75,7 @@ class MessengerUI : Application() {
                     orientation = Orientation.VERTICAL
                 }
                 tab.content = pane
+                tabPane.tabs.add(tab);
                 start(name, hostname, newChanelField.text, pane)
             }
         }
@@ -87,15 +87,15 @@ class MessengerUI : Application() {
             add(addChanelButton, 2, 0)
         }
 
-        pane.children.add(newChanelGrid)
+        pane.children.addAll(tabPane, newChanelGrid)
 
-        layout.children.addAll(tabPane, pane, nameGrid, hostGrid, okButton, newChanelGrid)
+        layout.children.addAll(nameGrid, hostGrid, okButton)
         newWindow.show()
     }
 
     private fun start(name: String, host: String, chanel: String, pane: FlowPane) {
         val ui = UIInteractor(name, pane)
-//        Chat(hostname, chanel, ui).start()
+        Chat(chanel, ui, hostname)
     }
 
     companion object {
