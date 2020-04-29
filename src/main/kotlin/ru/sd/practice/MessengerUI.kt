@@ -4,12 +4,9 @@ import javafx.application.Application
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.scene.Scene
-import javafx.scene.control.Button
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.GridPane
-import javafx.scene.layout.HBox
 import javafx.stage.Stage
 
 
@@ -19,10 +16,10 @@ class MessengerUI : Application() {
         orientation = Orientation.VERTICAL
         vgap = 8.0
         hgap = 4.0
-        padding = Insets(15.0, 15.0, 15.0, 15.0)
     }
     private val scene = Scene(pane, WIDTH, HEIGHT)
-    private val name = ""
+    private var name = ""
+    private var hostname = ""
 
     override fun start(primaryStage: Stage) {
         primaryStage.scene = scene
@@ -31,6 +28,11 @@ class MessengerUI : Application() {
     }
 
     fun start() {
+        var tabPane = TabPane().apply {
+            padding = Insets(15.0, 15.0, 15.0, 15.0)
+        }
+        pane.children.add(tabPane)
+
         val layout = FlowPane().apply {
             orientation = Orientation.VERTICAL
             vgap = 8.0
@@ -46,77 +48,54 @@ class MessengerUI : Application() {
 
         val nameField = TextField()
         val nameGrid = GridPane().apply {
-            vgap = 4.0
-            hgap = 10.0
             padding = Insets(5.0, 5.0, 5.0, 5.0)
             add(Label("Name: "), 0, 0)
             add(nameField, 1, 0)
         }
+
         val hostField = TextField()
         val hostGrid = GridPane().apply {
-            isVisible = false
-            vgap = 4.0
-            hgap = 10.0
             padding = Insets(5.0, 5.0, 5.0, 5.0)
             add(Label("Host: "), 0, 0)
             add(hostField, 1, 0)
         }
-        val portField = TextField()
-        val portGrid = GridPane().apply {
-            isVisible = false
-            vgap = 4.0
-            hgap = 10.0
-            padding = Insets(5.0, 5.0, 5.0, 5.0)
-            add(Label("Port: "), 0, 0)
-            add(portField, 1, 0)
-        }
-        val serverButton = Button("Server").apply {
-            isFocusTraversable = false
-        }
-        val clientButton = Button("Client").apply {
-            isFocusTraversable = false
-        }
-        val hbox = HBox(serverButton, clientButton)
-        var isServer = false
+
         val okButton = Button("Ok").apply {
-            isFocusTraversable = false
-            isVisible = false
             setOnAction {
+                name = nameField.text
+                hostname = hostField.text
                 newWindow.close()
-                if (isServer) {
-                    startServer(nameField.text, portField.text.toInt())
-                } else {
-                    startClient(nameField.text, portField.text.toInt(), hostField.text)
-                }
             }
         }
-        val onButtonClicked = {
-            serverButton.isVisible = false
-            clientButton.isVisible = false
-            portGrid.isVisible = true
-            okButton.isVisible = true
+
+        val newChanelField = TextField()
+        val addChanelButton = Button("Add").apply {
+            setOnAction {
+                val tab = Tab()
+                val pane = FlowPane().apply {
+                    orientation = Orientation.VERTICAL
+                }
+                tab.content = pane
+                start(name, hostname, newChanelField.text, pane)
+            }
         }
-        serverButton.setOnAction {
-            isServer = true
-            onButtonClicked()
+
+        val newChanelGrid = GridPane().apply {
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
+            add(Label("Chanel: "), 0, 0)
+            add(newChanelField, 1, 0)
+            add(addChanelButton, 2, 0)
         }
-        clientButton.setOnAction {
-            isServer = false
-            onButtonClicked()
-            hostGrid.isVisible = true
-        }
-        layout.children.addAll(nameGrid, hbox, hostGrid, portGrid, okButton)
+
+        pane.children.add(newChanelGrid)
+
+        layout.children.addAll(tabPane, pane, nameGrid, hostGrid, okButton, newChanelGrid)
         newWindow.show()
     }
 
-    private fun startServer(name: String, port: Int) {
+    private fun start(name: String, host: String, chanel: String, pane: FlowPane) {
         val ui = UIInteractor(name, pane)
-        //TODO MessengerServer(port, ui).start()
-    }
-
-    private fun startClient(name: String, port: Int, host: String) {
-        val ui = UIInteractor(name, pane)
-        // TODO MessengerClient(host, port, ui).start()
+//        Chat(hostname, chanel, ui).start()
     }
 
     companion object {
