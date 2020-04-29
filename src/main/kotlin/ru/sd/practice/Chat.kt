@@ -4,7 +4,7 @@ import com.rabbitmq.client.ConnectionFactory
 
 
 class Chat(private val name: String, private val interactor: Interactor, private val hostname: String) {
-    private lateinit var factory: ConnectionFactory
+    private var factory: ConnectionFactory
 
     init {
         interactor.addConsumer {
