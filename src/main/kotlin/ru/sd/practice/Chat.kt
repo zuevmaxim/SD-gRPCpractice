@@ -1,18 +1,24 @@
 package ru.sd.practice
 
+import com.rabbitmq.client.ConnectionFactory
+
 
 class Chat(private val name: String, private val interactor: Interactor, private val host: String) {
-    fun send() {
-//    val factory = ConnectionFactory()
-//    factory.setHost("localhost")
-//    factory.newConnection().use({ connection ->
-//        connection.createChannel().use({ channel ->
-//            channel.exchangeDeclare(EXCHANGE_NAME, "fanout")
-//            val message = if (argv.length < 1) "info: Hello World!" else java.lang.String.join(" ", argv)
-//            channel.basicPublish(EXCHANGE_NAME, "", null, message.toByteArray(charset("UTF-8")))
-//            println(" [x] Sent '$message'")
-//        })
-//    })
+    init {
+        interactor.addConsumer {
+            parcel -> send(parcel)
+        }
+    }
+
+    fun send(parcel: Parcel) {
+        val factory = ConnectionFactory()
+        factory.host = host
+        factory.newConnection().use { connection ->
+            connection.createChannel().use { channel ->
+                channel.exchangeDeclare(name, "fanout")
+                channel.basicPublish(name, "", null, parcel.toBytes())
+            }
+        }
     }
 
     fun receive() {
