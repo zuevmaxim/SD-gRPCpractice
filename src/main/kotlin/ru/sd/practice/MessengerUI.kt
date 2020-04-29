@@ -3,6 +3,7 @@ package ru.sd.practice
 import javafx.application.Application
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
+import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.*
 import javafx.scene.layout.FlowPane
@@ -17,6 +18,8 @@ class MessengerUI : Application() {
         vgap = 8.0
         hgap = 4.0
     }
+
+    private val chanels = HashMap<String, Int>();
     private val scene = Scene(pane, WIDTH, HEIGHT)
     private var name = ""
     private var hostname = ""
@@ -48,7 +51,7 @@ class MessengerUI : Application() {
             add(nameField, 1, 0)
         }
 
-        val hostField = TextField()
+        val hostField = TextField("localhost")
         val hostGrid = GridPane().apply {
             padding = Insets(5.0, 5.0, 5.0, 5.0)
             add(Label("Host: "), 0, 0)
@@ -75,12 +78,19 @@ class MessengerUI : Application() {
                     orientation = Orientation.VERTICAL
                 }
                 tab.content = pane
-                tabPane.tabs.add(tab);
-                start(name, hostname, newChanelField.text, pane)
+                tabPane.tabs.add(tab)
+                val chanel = newChanelField.text
+                tab.text = chanel
+                if (chanels.containsKey(newChanelField.text)) {
+                    tabPane.selectionModel.select(chanels[chanel]!!)
+                } else {
+                    start(newChanelField.text, pane)
+                }
             }
         }
 
         val newChanelGrid = GridPane().apply {
+            alignment = Pos.BOTTOM_RIGHT
             padding = Insets(5.0, 5.0, 5.0, 5.0)
             add(Label("Chanel: "), 0, 0)
             add(newChanelField, 1, 0)
@@ -93,7 +103,7 @@ class MessengerUI : Application() {
         newWindow.show()
     }
 
-    private fun start(name: String, host: String, chanel: String, pane: FlowPane) {
+    private fun start(chanel: String, pane: FlowPane) {
         val ui = UIInteractor(name, pane)
         Chat(chanel, ui, hostname)
     }
