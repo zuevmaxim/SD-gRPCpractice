@@ -1,7 +1,8 @@
 package ru.sd.practice
 
+import com.rabbitmq.client.ConnectionFactory
 
-class Chat(private val name: String, private val interactor: Interactor, private val host: String) {
+class Chat(private val name: String, private val interactor: Interactor, private val hostname: String) {
     fun send() {
 //    val factory = ConnectionFactory()
 //    factory.setHost("localhost")
@@ -16,21 +17,18 @@ class Chat(private val name: String, private val interactor: Interactor, private
     }
 
     fun receive() {
-//        val factory = ConnectionFactory()
-//        factory.host = "localhost"
-//        val connection: Connection = factory.newConnection()
-//        val channel: Channel = connection.createChannel()
-//
-//        channel.exchangeDeclare(EXCHANGE_NAME, "fanout")
-//        val queueName: String = channel.queueDeclare().getQueue()
-//        channel.queueBind(queueName, EXCHANGE_NAME, "")
-//
-//        println(" [*] Waiting for messages. To exit press CTRL+C")
-//
-//        val deliverCallback = DeliverCallback { consumerTag: String?, delivery: Delivery ->
-//            val message = String(delivery.body, "UTF-8")
-//            println(" [x] Received '$message'")
-//        }
-//        channel.basicConsume(queueName, true, deliverCallback, { consumerTag -> })
+        val factory = ConnectionFactory().apply {
+            host = hostname
+        }
+        val connection = factory.newConnection()
+        val channel = connection.createChannel()
+        channel.exchangeDeclare(name, "fanout")
+        val queueName: String = channel.queueDeclare().getQueue()
+        channel.queueBind(queueName, name, "")
+
+        channel.basicConsume(queueName, { _, delivery ->
+            val parcel = Parcel.fromBytes(delivery.body)
+            interactor.addMessage(parcel)
+        }) { _ -> }
     }
 }
