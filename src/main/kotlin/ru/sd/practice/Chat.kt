@@ -7,12 +7,13 @@ class Chat(private val name: String, private val interactor: Interactor, private
     private var factory: ConnectionFactory
 
     init {
-        interactor.addConsumer {
-            parcel -> send(parcel)
+        interactor.addConsumer { parcel ->
+            send(parcel)
         }
         factory = ConnectionFactory().apply {
             host = hostname
         }
+        receive()
     }
 
     fun send(parcel: Parcel) {
@@ -24,11 +25,11 @@ class Chat(private val name: String, private val interactor: Interactor, private
         }
     }
 
-    fun receive() {
+    private fun receive() {
         val connection = factory.newConnection()
         val channel = connection.createChannel()
         channel.exchangeDeclare(name, "fanout")
-        val queueName: String = channel.queueDeclare().getQueue()
+        val queueName: String = channel.queueDeclare().queue
         channel.queueBind(queueName, name, "")
 
         channel.basicConsume(queueName, { _, delivery ->
