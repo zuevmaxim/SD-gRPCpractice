@@ -2,28 +2,38 @@ package ru.sd.practice
 
 import javafx.application.Platform
 import javafx.geometry.Insets
-import javafx.scene.control.Button
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
-import javafx.scene.layout.FlowPane
-import javafx.scene.layout.HBox
+import javafx.geometry.Pos
+import javafx.scene.control.*
+import javafx.scene.layout.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class UIInteractor(username: String, private val layout: FlowPane) : Interactor {
+class UIInteractor(username: String, layout: VBox) : Interactor {
     private val user = User(username)
-    private val messageField = TextField()
+    private val messageField = TextArea().apply {
+        maxHeight = 100.0
+        maxWidth = 250.0
+    }
     private val sendButton = Button("Send").apply {
         setOnAction {
             newMessage(messageField.text)
             messageField.clear()
         }
     }
-    private val hBox = HBox(messageField, sendButton)
+    private val hBox = HBox(messageField, sendButton).apply {
+        alignment = Pos.BOTTOM_CENTER
+        padding = Insets(10.0, 5.0, 10.0, 5.0)
+    }
+
+    private val messagesBox = VBox()
 
     init {
-        layout.children.add(hBox)
+        val scrollPane = ScrollPane()
+        VBox.setVgrow(scrollPane, Priority.ALWAYS)
+        scrollPane.content = messagesBox
+        scrollPane.maxWidth = Double.MAX_VALUE;
+        layout.children.addAll(scrollPane, hBox)
     }
 
     override fun addMessage(message: Parcel) {
@@ -38,7 +48,7 @@ class UIInteractor(username: String, private val layout: FlowPane) : Interactor 
                 padding = Insets(5.0, 5.0, 5.0, 5.0)
             }
             val hbox = HBox(timeLabel, nameLabel, messageLabel)
-            layout.children.addAll(hbox)
+            messagesBox.children.addAll(hbox)
         }
     }
 

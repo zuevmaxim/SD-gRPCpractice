@@ -6,17 +6,16 @@ import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.*
-import javafx.scene.layout.FlowPane
-import javafx.scene.layout.GridPane
+import javafx.scene.layout.*
+import javafx.scene.layout.GridPane.setVgrow
 import javafx.stage.Stage
 
 
 class MessengerUI : Application() {
 
-    private val pane = FlowPane().apply {
-        orientation = Orientation.VERTICAL
-        vgap = 8.0
-        hgap = 4.0
+    private val pane = VBox().apply {
+        maxHeight = Control.USE_PREF_SIZE
+        prefWidth = WIDTH
     }
 
     private val chanels = HashMap<String, Int>();
@@ -54,6 +53,7 @@ class MessengerUI : Application() {
         val hostField = TextField("localhost")
         val hostGrid = GridPane().apply {
             padding = Insets(5.0, 5.0, 5.0, 5.0)
+            alignment = Pos.BOTTOM_CENTER
             add(Label("Host: "), 0, 0)
             add(hostField, 1, 0)
         }
@@ -66,17 +66,14 @@ class MessengerUI : Application() {
             }
         }
 
-        val tabPane = TabPane().apply {
-            padding = Insets(15.0, 15.0, 15.0, 15.0)
-        }
+        val tabPane = TabPane()
 
         val newChanelField = TextField()
         val addChanelButton = Button("Add").apply {
             setOnAction {
                 val tab = Tab()
-                val pane = FlowPane().apply {
-                    orientation = Orientation.VERTICAL
-                }
+                val pane = VBox()
+                VBox.setVgrow(tabPane, Priority.ALWAYS)
                 tab.content = pane
                 tabPane.tabs.add(tab)
                 val chanel = newChanelField.text
@@ -90,26 +87,26 @@ class MessengerUI : Application() {
         }
 
         val newChanelGrid = GridPane().apply {
-            alignment = Pos.BOTTOM_RIGHT
-            padding = Insets(5.0, 5.0, 5.0, 5.0)
+            alignment = Pos.TOP_CENTER
+            padding = Insets(10.0, 5.0, 10.0, 5.0)
             add(Label("Chanel: "), 0, 0)
             add(newChanelField, 1, 0)
             add(addChanelButton, 2, 0)
         }
 
-        pane.children.addAll(tabPane, newChanelGrid)
+        pane.children.addAll(newChanelGrid, tabPane)
 
         layout.children.addAll(nameGrid, hostGrid, okButton)
         newWindow.show()
     }
 
-    private fun start(chanel: String, pane: FlowPane) {
+    private fun start(chanel: String, pane: VBox) {
         val ui = UIInteractor(name, pane)
         Chat(chanel, ui, hostname)
     }
 
     companion object {
         private const val HEIGHT = 600.0
-        private const val WIDTH = 600.0
+        const val WIDTH = 600.0
     }
 }
