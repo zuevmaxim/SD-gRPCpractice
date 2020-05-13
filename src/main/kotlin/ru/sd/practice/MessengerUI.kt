@@ -18,7 +18,7 @@ class MessengerUI : Application() {
         prefWidth = WIDTH
     }
 
-    private val chanels = HashMap<String, Int>();
+    private val chanels = HashMap<String, Int>()
     private val scene = Scene(pane, WIDTH, HEIGHT)
     private var name = ""
     private var hostname = ""
@@ -71,18 +71,19 @@ class MessengerUI : Application() {
         val newChanelField = TextField()
         val addChanelButton = Button("Add").apply {
             setOnAction {
-                val tab = Tab()
-                val pane = VBox()
-                VBox.setVgrow(tabPane, Priority.ALWAYS)
-                tab.content = pane
-                tabPane.tabs.add(tab)
                 val chanel = newChanelField.text
-                tab.text = chanel
-                if (chanels.containsKey(newChanelField.text)) {
-                    tabPane.selectionModel.select(chanels[chanel]!!)
-                } else {
-                    start(newChanelField.text, pane)
+                if (!chanels.containsKey(chanel)) {
+                    val pane = VBox()
+                    val tab = Tab().apply {
+                        content = pane
+                        text = chanel
+                    }
+                    VBox.setVgrow(tabPane, Priority.ALWAYS)
+                    chanels[chanel] = tabPane.tabs.size
+                    tabPane.tabs.add(tab)
+                    start(chanel, pane)
                 }
+                tabPane.selectionModel.select(chanels[chanel]!!)
             }
         }
 
