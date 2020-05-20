@@ -7,7 +7,6 @@ import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.*
 import javafx.scene.layout.*
-import javafx.scene.layout.GridPane.setVgrow
 import javafx.stage.Stage
 
 
