@@ -19,8 +19,9 @@ class MessengerUI : Application() {
 
     private val chanels = HashMap<String, Int>()
     private val scene = Scene(pane, WIDTH, HEIGHT)
-    private var name = ""
+    private var username = ""
     private var hostname = ""
+    private var password = ""
 
     override fun start(primaryStage: Stage) {
         primaryStage.scene = scene
@@ -42,24 +43,31 @@ class MessengerUI : Application() {
             setScene(scene)
         }
 
-        val nameField = TextField()
-        val nameGrid = GridPane().apply {
+        val usernameField = TextField()
+        val usernameGrid = GridPane().apply {
             padding = Insets(5.0, 5.0, 5.0, 5.0)
-            add(Label("Name: "), 0, 0)
-            add(nameField, 1, 0)
+            add(Label("Username: "), 0, 0)
+            add(usernameField, 1, 0)
+        }
+
+        val passwordField = TextField()
+        val passwordGrid = GridPane().apply {
+            padding = Insets(5.0, 5.0, 5.0, 5.0)
+            add(Label("Password: "), 0, 0)
+            add(passwordField, 1, 0)
         }
 
         val hostField = TextField("localhost")
         val hostGrid = GridPane().apply {
             padding = Insets(5.0, 5.0, 5.0, 5.0)
-            alignment = Pos.BOTTOM_CENTER
             add(Label("Host: "), 0, 0)
             add(hostField, 1, 0)
         }
 
         val okButton = Button("Ok").apply {
             setOnAction {
-                name = nameField.text
+                username = usernameField.text
+                password = passwordField.text
                 hostname = hostField.text
                 newWindow.close()
             }
@@ -96,13 +104,13 @@ class MessengerUI : Application() {
 
         pane.children.addAll(newChanelGrid, tabPane)
 
-        layout.children.addAll(nameGrid, hostGrid, okButton)
+        layout.children.addAll(hostGrid, usernameGrid, passwordGrid, okButton)
         newWindow.show()
     }
 
     private fun start(chanel: String, pane: VBox) {
-        val ui = UIInteractor(name, pane)
-        Chat(chanel, ui, hostname)
+        val ui = UIInteractor(username, pane)
+        Chat(chanel, ui, hostname) //TODO: use username and password here
     }
 
     companion object {
